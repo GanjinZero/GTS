@@ -4,7 +4,6 @@ import os
 import time
 import string
 from tqdm import tqdm
-from pyserverchan import pyserver
 
 
 parser = argparse.ArgumentParser()
@@ -133,6 +132,5 @@ print(f"quad_gram:{len(quad_gram)}")
 
 use_time = time.time() - start_time
 log_text = f"Job_name:n-gram, Use_time:{str(use_time)}, Save_path:{args.output_path})"
-svc = pyserver.ServerChan()
-svc.output_to_weixin(log_text)
+print(log_text)
 

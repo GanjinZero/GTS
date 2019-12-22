@@ -1,5 +1,10 @@
-def is_chinese(char):
-    if u'\u4e00' <= char <= u'\u9fa5' or 'a' <= char <= 'z' or 'A' <= char <= 'Z':
+def is_chinese(ch):
+    if u'\u4e00' <= ch <= u'\u9fa5' or 'a' <= ch <= 'z' or 'A' <= ch <= 'Z':
+        return True
+    return False
+
+def is_chinese_not_english(ch):
+    if u'\u4e00' <= ch <= u'\u9fa5':
         return True
     return False
 

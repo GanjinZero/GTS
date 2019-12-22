@@ -1,12 +1,14 @@
 import os
-import json
-from model.parameters import model_path
-from src.utils.chinese_judge import chinese_judge
+import ujson
+from .utils.char_judge import is_chinese
 from tqdm import tqdm
+
+model_path = "/home/veritas/GanjinZero/specter/model/"
+
 
 def load_ngram(use_dictionary=False, coef=5000):
     with open(os.path.join(model_path, "char_dict_new.json"), "r", encoding="utf-8") as f:
-        char_dict = json.load(f)
+        char_dict = ujson.load(f)
     print(f"Uni-gram count:{len(char_dict)}")
 
     bi_gram = dict()
@@ -65,13 +67,13 @@ def load_ngram(use_dictionary=False, coef=5000):
 def load_ngram_file(uni_gram_path, bi_gram_path, tri_gram_path):
     print(uni_gram_path, bi_gram_path, tri_gram_path)
     with open(uni_gram_path, "r", encoding="utf-8") as f:
-        uni_gram = json.load(f)
+        uni_gram = ujson.load(f)
     print(f"Uni-gram count:{len(uni_gram)}")
     with open(bi_gram_path, "r", encoding="utf-8") as f:
-        bi_gram = json.load(f)
+        bi_gram = ujson.load(f)
     print(f"Bi-gram count:{len(bi_gram)}")
     with open(tri_gram_path, "r", encoding="utf-8") as f:
-        tri_gram = json.load(f)
+        tri_gram = ujson.load(f)
     print(f"Tri-gram count:{len(tri_gram)}")
     return uni_gram, bi_gram, tri_gram
 
@@ -173,11 +175,11 @@ def save_ngram(rm_coef, wk_coef, xw_coef):
     save_folder_name = "/media/sdc/GanjinZero/ngram/" + "medical_1_" + rm_part + wk_part + xw_part
     os.system(f"mkdir {save_folder_name}")
     with open(os.path.join(save_folder_name, "uni_gram.json"), "w", encoding="utf-8") as f:
-        json.dump(u_g, f)
+        ujson.dump(u_g, f)
     with open(os.path.join(save_folder_name, "bi_gram.json"), "w", encoding="utf-8") as f:
-        json.dump(b_g, f)
+        ujson.dump(b_g, f)
     with open(os.path.join(save_folder_name, "tri_gram.json"), "w", encoding="utf-8") as f:
-        json.dump(t_g, f)
+        ujson.dump(t_g, f)
     return None
 
 def load_ngram_new(rm_coef, wk_coef, xw_coef):
@@ -194,11 +196,11 @@ def load_ngram_new(rm_coef, wk_coef, xw_coef):
     if not os.path.exists(load_folder_name):
         save_ngram(rm_coef, wk_coef, xw_coef)
     with open(os.path.join(load_folder_name, "uni_gram.json"), "r", encoding="utf-8") as f:
-        u_g = json.load(f)
+        u_g = ujson.load(f)
     with open(os.path.join(load_folder_name, "bi_gram.json"), "r", encoding="utf-8") as f:
-        b_g = json.load(f)
+        b_g = ujson.load(f)
     with open(os.path.join(load_folder_name, "tri_gram.json"), "r", encoding="utf-8") as f:
-        t_g = json.load(f)
+        t_g = ujson.load(f)
     return u_g, b_g, t_g
     
 
