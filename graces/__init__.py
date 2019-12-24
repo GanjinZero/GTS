@@ -22,16 +22,17 @@ def sg_l(x):
     return t(x) - t(5)
 
 class graces:
-    def __init__(self, coef_md=1, coef_rm=0, coef_wk=50, coef_xw=5, max_word_length=6):
+    def __init__(self, coef_me=1, coef_rm=0, coef_wk=50, coef_xw=5, max_word_length=6):
         print("Graph Cut Chinese Segment")
         start_time = time.time()
-        self.uni_gram, self.bi_gram, self.tri_gram = load_ngram_new(coef_rm, coef_wk, coef_xw)
+        self.uni_gram, self.bi_gram, self.tri_gram = load_ngram_new(coef_me, coef_rm, coef_wk, coef_xw)
         self.bi_log_sd = np.std([sg_l(x[0]) for x in self.bi_gram.values()])
         self.weaken_set = set("未见可或行于及和的")
         self.weak_coef = 0.1
         self.punc_set = set("。，,！!？? \n\r\"\'“”、()（）[]【】:：;；")
         self.max_word_length = max_word_length
         self.preprocess_alphabet_number = True
+        self.eig_cut = 1.
         end_time = time.time()
         print(f"Load model for {round(end_time - start_time, 2)}s.")
 
@@ -101,6 +102,23 @@ class graces:
         w.append(self.calculate_bi(sentence[-2:], front=sentence[-3]))
         return w
 
+    def calculate_eig_count(self, w, eig_cut):
+        # calculate the count of Laplacian matrix which eigenvalue is smaller than eig_cut
+        L = np.zeros((len(w) + 1, len(w) + 1))
+        L[0][0] = w[0]
+        L[-1][-1] = w[-1]
+        for i in range(len(w)):
+            L[i][i + 1] = -w[i]
+            L[i + 1][i] = -w[i]
+            if i < len(w) - 1:
+                L[i + 1][i + 1] = w[i] + w[i + 1]
+        eig_val, _ = np.linalg.eigh(L)
+        count = 0
+        for eig in eig_val:
+            if eig <= eig_cut:
+                count += 1
+        return count
+
     def preprocess(self, seg_list):
         seg_new = [seg_list[0]]
         for i in range(len(seg_list) - 1):
@@ -116,13 +134,18 @@ class graces:
         sentence = sentence.strip()
         if len(sentence) <= 2: return [sentence]
         w = self.calculate_sentence(sentence) 
+        if k == -2: # use calculate eig count
+            k = self.calculate_eig_count(w, eig_cut=self.eig_cut)
         return dp(sentence, w, k=k, c=self.max_word_length)
 
-    def cut(self, sentence):
+    def cut(self, sentence, method="no_two_char"):
         seg_result = []
         small_sentence_list = self.split_sentence_by_punc(sentence)
         for small_sentence in small_sentence_list:
-            seg_result += self.cut_small_sentence(small_sentence)
+            if method == "no_two_char":
+                seg_result += self.cut_small_sentence(small_sentence)
+            if method == "eig_cut":
+                seg_result += self.cut_small_sentence(small_sentence, k=-2)
         if self.preprocess_alphabet_number:
             return self.preprocess(seg_result)
         return seg_result
@@ -136,14 +159,14 @@ class graces:
             result_list.append(self.cut_k(sentence, i))
         return result_list
 
-    def cut_file(self, input_file, output_file):
+    def cut_file(self, input_file, output_file, method="no_two_char"):
         start_time = time.time()
 
         with open(input_file, "r", encoding="utf-8") as f:
             lines = f.readlines()
         with open(output_file, "w", encoding="utf-8") as f:
             for line in lines:
-                seg_line = " ".join(" ".join(self.cut(line)).split())
+                seg_line = " ".join(" ".join(self.cut(line, method)).split())
                 f.write(seg_line + os.linesep)
             
         end_time = time.time()

@@ -25,9 +25,9 @@ def get_split_from_u(s, u, good_cut, k=-1):
             if now == 0 and checker:
                 k = i
         #print(k, good_cut)
-        k = min(max(k, min(good_cut)), max(good_cut))
+    k = min(max(k, min(good_cut)), max(good_cut))
     
-    assert k in good_cut, f"{k} cut for length {len(s)} is not avalible, good cut:{str(good_cut)}."
+    #assert k in good_cut, f"{k} cut for length {len(s)} is not avalible, good cut:{str(good_cut)}."
     #print(f"Choose {k}.")
     cut_set = set()
     i_cut = k

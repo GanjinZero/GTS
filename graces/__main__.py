@@ -9,7 +9,7 @@ parser.add_argument("-s", "--sentence", default="")
 
 args = parser.parse_args()
 if args.sentence != "":
-    graces.cut(args.sentence)
+    print(graces.cut(args.sentence))
 
 if args.input_file != "" and args.output_file != "":
     graces.cut_file(args.input_file, args.output_file)

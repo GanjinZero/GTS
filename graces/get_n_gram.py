@@ -3,7 +3,7 @@ import ujson
 from .utils.char_judge import is_chinese
 from tqdm import tqdm
 
-model_path = "/home/veritas/GanjinZero/specter/model/"
+model_path = "/home/veritas/Code/GanjinZero/specter/model/"
 
 
 def load_ngram(use_dictionary=False, coef=5000):
@@ -126,12 +126,18 @@ def build_new_ngram(uni_gram, bi_gram, tri_gram):
     return new_uni_gram, new_bi_gram, new_tri_gram
 
 
-def ngram(rm_coef, wk_coef, xw_coef):
-    u_g, b_g, t_g = load_ngram()
-    u_g_list = [u_g]
-    b_g_list = [b_g]
-    t_g_list = [t_g]
-    coef_list = [1]
+def ngram(me_coef, rm_coef, wk_coef, xw_coef):
+    coef_list = []
+    u_g_list = []
+    b_g_list = []
+    t_g_list = []
+    assert me_coef + rm_coef + wk_coef + xw_coef > 0., "No coef. is bigger than 0."
+    if me_coef > 0:
+        u_g, b_g, t_g = load_ngram()
+        u_g_list.append(u_g)
+        b_g_list.append(b_g)
+        t_g_list.append(t_g)
+        coef_list.append(me_coef)
     if rm_coef > 0:
         rm_u_g, rm_b_g, rm_t_g = load_ngram_file("/media/sdc/GanjinZero/rmrb/ngram/uni_gram.json",
                                                 "/media/sdc/GanjinZero/rmrb/ngram/bi_gram.json",
@@ -156,23 +162,16 @@ def ngram(rm_coef, wk_coef, xw_coef):
         b_g_list.append(xw_b_g)
         t_g_list.append(xw_t_g)
         coef_list.append(xw_coef)
-    if rm_coef > 0 or wk_coef > 0 or xw_coef > 0:
-        all_u_g, all_b_g, all_t_g = migrate_ngram(u_g_list, b_g_list, t_g_list, coef_list)
-    else:
-        all_u_g, all_b_g, all_t_g = u_g, b_g, t_g
+    all_u_g, all_b_g, all_t_g = migrate_ngram(u_g_list, b_g_list, t_g_list, coef_list)
     return build_new_ngram(all_u_g, all_b_g, all_t_g)
 
-def save_ngram(rm_coef, wk_coef, xw_coef):
-    u_g, b_g, t_g = ngram(rm_coef, wk_coef, xw_coef)
-    rm_part = ""
-    wk_part = ""
-    if rm_coef > 0:
-        rm_part = f"rm_{str(rm_coef)}_"
-    if wk_coef > 0:
-        wk_part = f"wk_{str(wk_coef)}"
-    if xw_coef > 0:
-        xw_part = f"xw_{str(xw_coef)}"
-    save_folder_name = "/media/sdc/GanjinZero/ngram/" + "medical_1_" + rm_part + wk_part + xw_part
+def save_ngram(me_coef, rm_coef, wk_coef, xw_coef):
+    u_g, b_g, t_g = ngram(me_coef, rm_coef, wk_coef, xw_coef)
+    me_part = f"ngram_{str(me_coef)}"    
+    rm_part = f"_{str(rm_coef)}"
+    wk_part = f"_{str(wk_coef)}"
+    xw_part = f"_{str(xw_coef)}"
+    save_folder_name = "/media/sdc/GanjinZero/ngram/" + me_part + rm_part + wk_part + xw_part
     os.system(f"mkdir {save_folder_name}")
     with open(os.path.join(save_folder_name, "uni_gram.json"), "w", encoding="utf-8") as f:
         ujson.dump(u_g, f)
@@ -180,21 +179,15 @@ def save_ngram(rm_coef, wk_coef, xw_coef):
         ujson.dump(b_g, f)
     with open(os.path.join(save_folder_name, "tri_gram.json"), "w", encoding="utf-8") as f:
         ujson.dump(t_g, f)
-    return None
 
-def load_ngram_new(rm_coef, wk_coef, xw_coef):
-    rm_part = ""
-    wk_part = ""
-    xw_part = ""
-    if rm_coef > 0:
-        rm_part = f"rm_{str(rm_coef)}_"
-    if wk_coef > 0:
-        wk_part = f"wk_{str(wk_coef)}"
-    if xw_coef > 0:
-        xw_part = f"xw_{str(xw_coef)}"
-    load_folder_name = "/media/sdc/GanjinZero/ngram/" + "medical_1_" + rm_part + wk_part + xw_part
+def load_ngram_new(me_coef, rm_coef, wk_coef, xw_coef):
+    me_part = f"ngram_{str(me_coef)}"    
+    rm_part = f"_{str(rm_coef)}"
+    wk_part = f"_{str(wk_coef)}"
+    xw_part = f"_{str(xw_coef)}"
+    load_folder_name = "/media/sdc/GanjinZero/ngram/" + me_part + rm_part + wk_part + xw_part
     if not os.path.exists(load_folder_name):
-        save_ngram(rm_coef, wk_coef, xw_coef)
+        save_ngram(me_coef, rm_coef, wk_coef, xw_coef)
     with open(os.path.join(load_folder_name, "uni_gram.json"), "r", encoding="utf-8") as f:
         u_g = ujson.load(f)
     with open(os.path.join(load_folder_name, "bi_gram.json"), "r", encoding="utf-8") as f:
