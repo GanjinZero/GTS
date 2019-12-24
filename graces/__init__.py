@@ -31,6 +31,7 @@ class graces:
         self.weak_coef = 0.1
         self.punc_set = set("。，,！!？? \n\r\"\'“”、()（）[]【】:：;；")
         self.max_word_length = max_word_length
+        self.preprocess_alphabet_number = True
         end_time = time.time()
         print(f"Load model for {round(end_time - start_time, 2)}s.")
 
@@ -100,6 +101,17 @@ class graces:
         w.append(self.calculate_bi(sentence[-2:], front=sentence[-3]))
         return w
 
+    def preprocess(self, seg_list):
+        seg_new = [seg_list[0]]
+        for i in range(len(seg_list) - 1):
+            if len(seg_list[i + 1]) == 0 or len(seg_list[i]) == 0:
+                seg_new += [seg_list[i + 1]]
+            elif is_alphabet(seg_list[i][-1]) and is_alphabet(seg_list[i + 1][0]):
+                seg_new[-1] = seg_new[-1] + seg_list[i + 1]
+            else:
+                seg_new += [seg_list[i + 1]]
+        return seg_new
+
     def cut_small_sentence(self, sentence, k=-1):
         sentence = sentence.strip()
         if len(sentence) <= 2: return [sentence]
@@ -111,6 +123,8 @@ class graces:
         small_sentence_list = self.split_sentence_by_punc(sentence)
         for small_sentence in small_sentence_list:
             seg_result += self.cut_small_sentence(small_sentence)
+        if self.preprocess_alphabet_number:
+            return self.preprocess(seg_result)
         return seg_result
 
     def cut_k(self, sentence, k):

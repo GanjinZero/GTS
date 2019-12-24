@@ -9,22 +9,26 @@ def get_split_from_u(s, u, good_cut, k=-1):
         checker = True
         for i in good_cut:
             if not checker:
-                k = i - 1
                 break
             cut_set = set()
             i_cut = i
             now = len(s)
-            while now != 0:
+            while now != 0 and checker:
                 if i_cut >= 1 and now >= 2:
+                    #print(u[now][i_cut], u[now-1][i_cut-1], s[now-1], s[now-2])
                     if u[now][i_cut] == 1 and u[now-1][i_cut-1] == 1 and is_chinese_not_english(s[now-1]) and is_chinese_not_english(s[now-2]):
                         checker = False
-                now -= int(u[now][i_cut])
-                i_cut -= 1
-                cut_set.update([now])
-            if now == 0:
-                checker = True
+                if checker:
+                    now -= int(u[now][i_cut])
+                    i_cut -= 1
+                    cut_set.update([now])
+            if now == 0 and checker:
+                k = i
+        #print(k, good_cut)
+        k = min(max(k, min(good_cut)), max(good_cut))
     
-    assert k in good_cut, f"{k} cut for length {len(s)} is not avalible."
+    assert k in good_cut, f"{k} cut for length {len(s)} is not avalible, good cut:{str(good_cut)}."
+    #print(f"Choose {k}.")
     cut_set = set()
     i_cut = k
     now = len(s)
@@ -57,10 +61,12 @@ def dp(s, w, c=6, k=-1, tp='ratio_cut_problem', debug_mode=False):
     for i in range(1, n + 1, 1):
         #print(i, round((i-1)/c)+1, k-n+i, i + 1, k-round((n-i)/c)+ 1)
         #for cut in range(max(round((i-1)/c)+1, k-n+i), min(i, k-round((n-i)/c)) + 1):
-        for cut in range(round((i-1)/c) + 1, i + 1):
+        #for cut in range(round((i-1)/c) + 1, i + 1):
+        for cut in range(1, i + 1, 1):
             for j in range(1, min(c + 1, i + 1), 1):
                 if debug_mode:
-                    print(i, cut, i-j)
+                    #print(i, cut, i-j)
+                    pass
                 temp = F[i - j][cut - 1]
                 cut_part = 0
                 if i - j > 0:
@@ -115,6 +121,11 @@ if __name__ == "__main__":
     #print(dp(s, w, k, c, debug_mode=True, tp='mix'))
     """
     #print(dp("今天真的是个好天气吗",w,k=-1))
+    """
     s = "今2019-3-5我可以战斗"
     w = [1,80,80,80,0,0,0,0,0.1,0,0,0.5,2]
     print(dp(s,w))
+    """
+    s = "一二三四五六七八九十"
+    w = [5,0.1,0.6,4,0]+[5,0.1,0.6,4]
+    print(dp(s, w, c=6, k=-1, debug_mode=True))
