@@ -3,12 +3,12 @@ name = "graces"
 
 import os
 import time
+from .utils.dp import dp
+from .utils.char_judge import is_chinese, is_alphabet
 from .get_n_gram import load_ngram_new
 import numpy as np
 import math
 from tqdm import tqdm
-from .utils.dp import dp
-from .utils.char_judge import is_chinese, is_alphabet
 import numpy.linalg as LA
 
 def sg(x):

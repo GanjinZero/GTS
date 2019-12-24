@@ -1,3 +1,6 @@
 */__pycache__
 __pycache__/
 *.txt
+/build/*
+/dist/*
+/graces.egg-info/*
