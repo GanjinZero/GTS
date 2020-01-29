@@ -44,11 +44,12 @@ def get_split_from_u(s, u, good_cut, k=-1):
             ret_s += " "
     return ret_s.split()
 
-def dp(s, w, c=6, k=-1, tp='ratio_cut_problem', debug_mode=False):
+def dp(s, w, c=6, k=-1, tp='ratio', debug_mode=False):
     # w is diagnoal of W
     # c is max_length_word
     # time complexity: O(n2c)
-    if tp != 'ratio_cut_problem':
+    # k=-1 choose by algorithm, k=0 return all, k>0 split to k part
+    if tp != 'ratio':
         s_w = np.cumsum(w)
 
     n = len(w) + 1
@@ -73,7 +74,7 @@ def dp(s, w, c=6, k=-1, tp='ratio_cut_problem', debug_mode=False):
                     cut_part += w[i - j - 1]
                 if i < n:
                     cut_part += w[i - 1]
-                if tp == 'ratio_cut_problem':
+                if tp == 'ratio':
                     cut_part /= j
                 else:
                     if i - j - 2 < 0:
@@ -97,8 +98,14 @@ def dp(s, w, c=6, k=-1, tp='ratio_cut_problem', debug_mode=False):
     good_cut = []
     for i in range(1, n + 1, 1):
         if F[n, i] < 999.:
-            good_cut.append(i) 
-    return get_split_from_u(s, u, good_cut, k)
+            good_cut.append(i)
+    if k != 0:
+        return get_split_from_u(s, u, good_cut, k)
+    else:
+        result = []
+        for i in good_cut:
+            result.append(get_split_from_u(s, u, good_cut, i))
+        return result
 
 if __name__ == "__main__":
     """    
@@ -128,4 +135,4 @@ if __name__ == "__main__":
     """
     s = "一二三四五六七八九十"
     w = [5,0.1,0.6,4,0]+[5,0.1,0.6,4]
-    print(dp(s, w, c=6, k=-1, debug_mode=True))
+    print(dp(s, w, c=6, k=0, debug_mode=True))

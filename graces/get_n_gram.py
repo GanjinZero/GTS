@@ -139,9 +139,9 @@ def ngram(me_coef, rm_coef, wk_coef, xw_coef):
         t_g_list.append(t_g)
         coef_list.append(me_coef)
     if rm_coef > 0:
-        rm_u_g, rm_b_g, rm_t_g = load_ngram_file("/media/sdc/GanjinZero/rmrb/ngram/uni_gram.json",
-                                                "/media/sdc/GanjinZero/rmrb/ngram/bi_gram.json",
-                                                "/media/sdc/GanjinZero/rmrb/ngram/tri_gram.json")
+        rm_u_g, rm_b_g, rm_t_g = load_ngram_file("/media/sdc/GanjinZero/rmrb_57/ngram/uni_gram.json",
+                                                "/media/sdc/GanjinZero/rmrb_57/ngram/bi_gram.json",
+                                                "/media/sdc/GanjinZero/rmrb_57/ngram/tri_gram.json")
         u_g_list.append(rm_u_g)
         b_g_list.append(rm_b_g)
         t_g_list.append(rm_t_g)
