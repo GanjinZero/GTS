@@ -18,7 +18,14 @@ graces.cut_k("饮食可，睡眠可，大便不规律，小便正常，体重无
 graces.cut_file("./input.txt", "./output.txt") # Segment a file
 ```
 
+## Data
+We ask 10 MD students to construct coarse and fine level word segmentation on EHRs for validation. We do not use data for training!
+**dev.txt**: Unlabeled EHRs from part of CCKS2019.
+**dev_label_coarse.txt**: Coarse-level word segmentation labels.
+**dev_label_fine.txt**: Fine-level word segmentation labels.
+
 ## Citation
+If you find our codes or data use
 ```bibtex
 @article{YUAN2020103542,
 title = "Unsupervised multi-granular Chinese word segmentation and term discovery via graph partition",
