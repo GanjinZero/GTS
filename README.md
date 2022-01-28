@@ -20,9 +20,9 @@ graces.cut_file("./input.txt", "./output.txt") # Segment a file
 
 ## Data
 We ask MD students to construct coarse and fine level word segmentation on EHRs for validation. We do not use data for training!
-**dev.txt**: Unlabeled EHRs from part of CCKS2019.
-**dev_label_coarse.txt**: Coarse-level word segmentation labels.
-**dev_label_fine.txt**: Fine-level word segmentation labels.
+- **dev.txt**: Unlabeled EHRs from part of CCKS2019.
+- **dev_label_coarse.txt**: Coarse-level word segmentation labels.
+- **dev_label_fine.txt**: Fine-level word segmentation labels.
 
 ## Citation
 If you find our codes or data use
