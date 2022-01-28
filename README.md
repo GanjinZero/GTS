@@ -25,7 +25,7 @@ We ask MD students to construct coarse and fine level word segmentation on EHRs 
 - **dev_label_fine.txt**: Fine-level word segmentation labels.
 
 ## Citation
-If you find our codes or data use
+If you find our codes or data useful, please cite:
 ```bibtex
 @article{YUAN2020103542,
 title = "Unsupervised multi-granular Chinese word segmentation and term discovery via graph partition",
